@@ -64,14 +64,18 @@ workflows:
             - checkout_code
           go_version: "1.12"
           vips_version: "8.7"
-      - publish_github_release:
-          requires:
-            - checkout_code
+
+  release:
+    jobs:
+      - checkout_code:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^\d+\.\d+\.\d+/
+              only: /^v\d+\.\d+\.\d+.*/
+      - publish_github_release:
+          requires:
+            - checkout_code # to grab changes from CHANGELOG
 
 executors:
   imgproxy:
