@@ -68,7 +68,7 @@ workflows:
   release:
     jobs:
       - checkout_code:
-          filters:
+          filters: &release_tags_filter
             branches:
               ignore: /.*/
             tags:
@@ -76,6 +76,7 @@ workflows:
       - publish_github_release:
           requires:
             - checkout_code # to grab changes from CHANGELOG
+          filters: *release_tags_filter
 
 executors:
   imgproxy:
