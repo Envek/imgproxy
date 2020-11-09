@@ -173,7 +173,7 @@ jobs:
 
   publish_github_release:
     docker:
-      image: circleci/golang
+      - image: circleci/golang
     steps:
       - run:
           name: Install github-release tool
