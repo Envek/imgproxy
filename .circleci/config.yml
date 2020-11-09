@@ -64,6 +64,14 @@ workflows:
             - checkout_code
           go_version: "1.12"
           vips_version: "8.7"
+      - publish_github_release:
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+/
 
 executors:
   imgproxy:
@@ -157,3 +165,25 @@ jobs:
           key: go-modules-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+
+  publish_github_release:
+    executor: imgproxy
+    steps:
+      - run:
+          name: Install github-release tool
+          command: go get github.com/github-release/github-release
+      - run:
+          name: Upload GitHub release
+          command: |
+            # Extract changelog entries between this and previous version headers
+            description_body=$(awk "BEGIN{inrelease=0} /## \[${CIRCLE_TAG}\]/{inrelease=1;next} /## \[[0-9]+\.[0-9]+\.[0-9]+\]/{inrelease=0;exit} {if (inrelease) print}" CHANGELOG.md)
+            # Add pre-release option if tag name has any suffix after vMAJOR.MINOR.PATCH
+            [[ ${CIRCLE_TAG} =~ ^v[0-9]+\.[0-9]+\.[0-9]+.+ ]] && prerelease="--pre-release"
+            # Create release!
+            github-release release \
+              --user ${CIRCLE_PROJECT_USERNAME} \
+              --repo ${CIRCLE_PROJECT_REPONAME} \
+              --tag ${CIRCLE_TAG} \
+              --name ${CIRCLE_TAG} \
+              --description "${description_body}" \
+              $prerelease
