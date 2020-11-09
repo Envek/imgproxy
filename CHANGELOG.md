@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.16.0-gamma] - 2020-11-09
+## [2.16.0-delta] - 2020-11-09
 ### Added
 - AVIF support.
 - (pro) Remove Adobe Illustrator garbage from SVGs.
