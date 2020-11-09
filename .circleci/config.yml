@@ -172,7 +172,8 @@ jobs:
             - "/go/pkg/mod"
 
   publish_github_release:
-    executor: imgproxy
+    docker:
+      image: circleci/golang
     steps:
       - run:
           name: Install github-release tool
